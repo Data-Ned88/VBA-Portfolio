@@ -1,0 +1,38 @@
+Function supervlookup(a As String, b As Range, c As Range)
+
+Dim search_on As String
+search_on = CStr(a)
+
+Dim lookup_array As Range
+Set lookup_array = b
+
+Dim result_array As Range
+Set result_array = c
+
+Dim s As String
+Dim row_num As Double
+Dim output As Variant
+Dim error As Boolean
+error = True
+If search_on = "" Then
+supervlookup = CVErr(xlErrNA)
+Exit Function
+End If
+
+For Each Cell In lookup_array
+
+s = CStr(Cell.Value)
+
+If s = search_on Then
+rownum = (Cell.Row - lookup_array.Cells(1, 1).Row) + 1
+output = result_array.Cells(rownum, 1).Value
+error = False
+Exit For
+End If
+
+Next Cell
+
+If error = False Then supervlookup = output Else supervlookup = CVErr(xlErrNA)
+
+
+End Function
