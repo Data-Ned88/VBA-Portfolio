@@ -1,0 +1,78 @@
+Sub M2M()
+
+Dim LastRow As Double
+LastRow = ActiveSheet.UsedRange.SpecialCells(xlCellTypeLastCell).Row
+Dim cols As String
+cols = CStr(InputBox _
+("Type in your id column letter, 1st category column letter, last category column letter, separated by commas"))
+
+If Len(cols) < 5 And Len(cols) > 8 Then
+MsgBox ("Invalid entry")
+Exit Sub
+End If
+
+Dim col_splits As Variant
+col_splits = split(cols, ",")
+
+Dim id_col, start_cat_col, end_cat_col, datasht As String
+
+id_col = CStr(col_splits(0)) & "1"
+start_cat_col = CStr(col_splits(1)) & "1"
+end_cat_col = CStr(col_splits(2)) & "1"
+datasht = ActiveSheet.Name
+
+MsgBox (id_col & " " & start_cat_col & " " & end_cat_col)
+
+Dim ws As Worksheet
+Set ws = ActiveWorkbook.Worksheets.Add
+
+Dim newsht As String
+newsht = ActiveSheet.Name
+
+ActiveWorkbook.Worksheets(datasht).Activate
+
+Dim tr_id, tr_sc, tr_ec As Range
+
+Set tr_id = Range(id_col)
+Set tr_sc = Range(start_cat_col)
+Set tr_ec = Range(end_cat_col)
+
+Dim cl_id, cl_sc, cl_ec As Integer
+
+cl_id = tr_id.Cells(1, 1).Column
+cl_sc = tr_sc.Cells(1, 1).Column
+cl_ec = tr_ec.Cells(1, 1).Column
+
+MsgBox (cl_id & " " & cl_sc & " " & cl_ec)
+
+Dim tstamp As Date
+tstamp = Now
+
+Dim id_range As Range
+Set id_range = Range(Cells(2, cl_id), Cells(LastRow, cl_id))
+
+Dim counter, idct As Double
+Dim cat_val, id_val As String
+counter = 2
+idct = 2
+
+For Each c In id_range
+id_val = c.Value
+
+For i = cl_sc To cl_ec
+
+cat_val = Cells(idct, i).Value
+
+If Not cat_val = "" Then
+ws.Cells(counter, 1) = id_val
+ws.Cells(counter, 2).Value = cat_val
+counter = counter + 1
+End If
+
+Next i
+idct = idct + 1
+Next c
+
+MsgBox "Completed in " & Format(Now - tstamp, "hh:mm:ss.00"), vbInformation
+
+End Sub
