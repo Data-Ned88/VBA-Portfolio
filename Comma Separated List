@@ -1,0 +1,75 @@
+Sub CommaSepList()
+
+Dim LastRow As Double
+LastRow = ActiveSheet.UsedRange.SpecialCells(xlCellTypeLastCell).Row
+
+Dim RangeInput, SortRange, InfoRange As String
+RangeInput = InputBox _
+("Enter the Column Letter of your identifier range, then a comma, then the Column Leeter of your information range")
+
+Dim RangeInputParse As Variant
+RangeInputParse = split(RangeInput, ",")
+
+
+SortRange = CStr(RangeInputParse(0)) & "1"
+InfoRange = CStr(RangeInputParse(1)) & "1"
+With ActiveSheet.Sort
+    With .SortFields
+        .Clear
+        .Add Key:=Range(SortRange), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+
+    End With
+    
+    .SetRange ActiveSheet.UsedRange
+    .Header = xlYes
+    .Apply
+
+End With
+
+Dim id_cn, inf_cn As Integer
+
+id_cn = ActiveSheet.Range(SortRange).Column
+inf_cn = ActiveSheet.Range(InfoRange).Column
+
+
+
+Dim StartSheetName As String
+StartSheetName = ActiveSheet.Name
+
+Dim ColWithID, ColWithInfo As Range
+Set ColWithID = ActiveWorkbook.Sheets(StartSheetName).Range(Cells(2, id_cn), Cells(LastRow, id_cn))
+Set ColWithInfo = ActiveWorkbook.Sheets(StartSheetName).Range(Cells(2, inf_cn), Cells(LastRow, inf_cn))
+MsgBox (id_cn & " " & inf_cn & " " & StartSheetName)
+
+Dim ws As Worksheet
+Set ws = ActiveWorkbook.Worksheets.Add
+ActiveWorkbook.Sheets(StartSheetName).Activate
+
+Dim counter, infcounter As Double
+counter = 1
+infcounter = 1
+Dim ss, tt, uu, vv, tmp As String
+tmp = ""
+For Each c In ColWithID
+ss = c.Value
+tt = c.Offset(-1, 0).Value
+uu = ColWithInfo(infcounter - 1, 1).Value
+tmp = tmp & uu & ", "
+If ss <> tt Then
+ws.Cells(counter, 1) = tt
+If Right(tmp, 2) = ", " Then
+    ws.Cells(counter, 2) = Left(tmp, Len(tmp) - 2)
+Else
+    ws.Cells(counter, 2) = tmp
+End If
+
+tmp = ""
+counter = counter + 1
+End If
+
+infcounter = infcounter + 1
+Next c
+
+
+
+End Sub
