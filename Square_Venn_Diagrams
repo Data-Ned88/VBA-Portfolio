@@ -1,0 +1,168 @@
+Sub venntwo()
+
+Dim xover_units As Integer
+
+Dim ge_sent, ig_sent, umg_sent, xov_ig_umg, xov_ge_ig, xov_ge_umg, xov_ge_ig_umg  As Double
+
+ge_sent = CDbl(ActiveCell.Value)
+ig_sent = CDbl(ActiveCell.Offset(1, 0).Value)
+umg_sent = CDbl(ActiveCell.Offset(2, 0).Value)
+xov_ig_umg = CDbl(ActiveCell.Offset(3, 0).Value)
+xov_ge_ig = CDbl(ActiveCell.Offset(4, 0).Value)
+xov_ge_umg = CDbl(ActiveCell.Offset(5, 0).Value)
+
+
+Dim squares(1 To 3) As Shape
+
+Dim heights, widths, transp As Double
+Dim lefts, tops, rgbone, rgbtwo, rgbthree, linea As Integer
+Dim texts As String
+Dim square_settings(1 To 4) As Variant
+
+square_settings(1) = Array(Sqr(ig_sent), Sqr(ig_sent), 112, 48, 160, "IG sent" & vbNewLine & CStr(ig_sent), 0.55, 1)
+square_settings(2) = Array(Sqr(umg_sent), Sqr(umg_sent), 255, 255, 0, "UMG sent" & vbNewLine & CStr(umg_sent), 0.55, 1)
+square_settings(3) = Array(Sqr(ge_sent), Sqr(ge_sent), 0, 176, 240, "GE sent" & vbNewLine & CStr(ge_sent), 0.55, 1)
+'square_settings(4) = Array(40, 60, 111, 60, 77, 222, 4, "EXPO")
+
+For x = 1 To 3
+
+xover_units = x
+
+ActiveWorkbook.Sheets.Add
+
+For i = 1 To UBound(squares)
+
+heights = CDbl(square_settings(i)(0))
+widths = CDbl(square_settings(i)(1))
+rgbone = CInt(square_settings(i)(2))
+rgbtwo = CInt(square_settings(i)(3))
+rgbthree = CInt(square_settings(i)(4))
+texts = CStr(square_settings(i)(5))
+transp = CDbl(square_settings(i)(6))
+linea = CInt(square_settings(i)(7))
+Set squares(i) = ActiveSheet.Shapes.AddShape(msoShapeRectangle, 100, 100, heights, widths)
+
+If linea = 1 Then
+squares(i).Line.ForeColor.RGB = RGB(rgbone, rgbtwo, rgbthree)
+squares(i).Line.Visible = msoTrue
+Else
+squares(i).Line.Visible = msoFalse
+End If
+
+With squares(i)
+    .Fill.ForeColor.RGB = RGB(rgbone, rgbtwo, rgbthree)
+    .Fill.Transparency = transp
+    .Height = heights
+    .Width = widths
+    .Line.ForeColor.RGB = RGB(rgbone, rgbtwo, rgbthree)
+
+End With
+
+
+
+Next i
+
+
+
+
+'keeping ig and umg at same height, calculate left move distance for umg square
+Dim xov_umg_ig_width, xov_ge_ig_width, xov_ge_umg_width, mover As Double
+xov_umg_ig_width = xov_ig_umg / Sqr(ig_sent)
+xov_ge_ig_width = xov_ge_ig / Sqr(ge_sent)
+xov_ge_umg_width = xov_ge_umg / Sqr(ge_sent)
+
+If xover_units = 1 Then
+ActiveSheet.Name = "Xover IG UMG"
+ActiveWindow.DisplayGridlines = False
+mover = Sqr(umg_sent) - xov_umg_ig_width
+squares(1).IncrementLeft mover
+squares(3).Delete
+
+With ActiveSheet.Shapes.AddTextbox(msoTextOrientationHorizontal, 200, 45, 90, 40)
+    .TextFrame2.TextRange.Text = CStr(square_settings(1)(5))
+    .Fill.ForeColor.RGB = RGB(CInt(square_settings(1)(2)), CInt(square_settings(1)(3)), CInt(square_settings(1)(4)))
+    .Fill.Transparency = CDbl(square_settings(1)(6))
+    .Line.Visible = msoTrue
+    .Line.ForeColor.RGB = RGB(CInt(square_settings(1)(2)), CInt(square_settings(1)(3)), CInt(square_settings(1)(4)))
+End With
+With ActiveSheet.Shapes.AddTextbox(msoTextOrientationHorizontal, 100, 45, 90, 40)
+    .TextFrame2.TextRange.Text = CStr(square_settings(2)(5))
+    .Fill.ForeColor.RGB = RGB(CInt(square_settings(2)(2)), CInt(square_settings(2)(3)), CInt(square_settings(2)(4)))
+    .Fill.Transparency = CDbl(square_settings(2)(6))
+    .Line.Visible = msoTrue
+    .Line.ForeColor.RGB = RGB(CInt(square_settings(2)(2)), CInt(square_settings(2)(3)), CInt(square_settings(2)(4)))
+End With
+With ActiveSheet.Shapes.AddTextbox(msoTextOrientationHorizontal, mover + 100, 150, 90, 40)
+    .TextFrame2.TextRange.Text = "X-over" & vbNewLine & CStr(xov_ig_umg)
+    .TextFrame2.TextRange.Font.Bold = True
+    .TextFrame2.TextRange.Font.Bold = 12
+    .Fill.Visible = msoFalse
+    .Line.Visible = msoFalse
+End With
+
+
+ElseIf xover_units = 2 Then
+ActiveSheet.Name = "Xover GE IG"
+ActiveWindow.DisplayGridlines = False
+mover = Sqr(ge_sent) - xov_ge_ig_width
+squares(1).IncrementLeft mover
+squares(2).Delete
+
+With ActiveSheet.Shapes.AddTextbox(msoTextOrientationHorizontal, 100, 45, 90, 40)
+    .TextFrame2.TextRange.Text = CStr(square_settings(3)(5))
+    .Fill.ForeColor.RGB = RGB(CInt(square_settings(3)(2)), CInt(square_settings(3)(3)), CInt(square_settings(3)(4)))
+    .Fill.Transparency = CDbl(square_settings(3)(6))
+    .Line.Visible = msoTrue
+    .Line.ForeColor.RGB = RGB(CInt(square_settings(3)(2)), CInt(square_settings(3)(3)), CInt(square_settings(3)(4)))
+End With
+With ActiveSheet.Shapes.AddTextbox(msoTextOrientationHorizontal, 200, 45, 90, 40)
+    .TextFrame2.TextRange.Text = CStr(square_settings(1)(5))
+    .Fill.ForeColor.RGB = RGB(CInt(square_settings(1)(2)), CInt(square_settings(1)(3)), CInt(square_settings(1)(4)))
+    .Fill.Transparency = CDbl(square_settings(1)(6))
+    .Line.Visible = msoTrue
+    .Line.ForeColor.RGB = RGB(CInt(square_settings(1)(2)), CInt(square_settings(1)(3)), CInt(square_settings(1)(4)))
+End With
+With ActiveSheet.Shapes.AddTextbox(msoTextOrientationHorizontal, mover + 100, 150, 90, 40)
+    .TextFrame2.TextRange.Text = "X-over" & vbNewLine & CStr(xov_ge_ig)
+    .TextFrame2.TextRange.Font.Bold = True
+    .TextFrame2.TextRange.Font.Bold = 12
+    .Fill.Visible = msoFalse
+    .Line.Visible = msoFalse
+End With
+
+Else
+ActiveSheet.Name = "Xover GE UMG"
+ActiveWindow.DisplayGridlines = False
+mover = Sqr(umg_sent) - xov_ge_umg_width
+squares(3).IncrementLeft mover
+
+squares(1).Delete
+
+With ActiveSheet.Shapes.AddTextbox(msoTextOrientationHorizontal, 200, 45, 90, 40)
+    .TextFrame2.TextRange.Text = CStr(square_settings(3)(5))
+    .Fill.ForeColor.RGB = RGB(CInt(square_settings(3)(2)), CInt(square_settings(3)(3)), CInt(square_settings(3)(4)))
+    .Fill.Transparency = CDbl(square_settings(3)(6))
+    .Line.Visible = msoTrue
+    .Line.ForeColor.RGB = RGB(CInt(square_settings(3)(2)), CInt(square_settings(3)(3)), CInt(square_settings(3)(4)))
+End With
+
+With ActiveSheet.Shapes.AddTextbox(msoTextOrientationHorizontal, 100, 45, 90, 40)
+    .TextFrame2.TextRange.Text = CStr(square_settings(2)(5))
+    .Fill.ForeColor.RGB = RGB(CInt(square_settings(2)(2)), CInt(square_settings(2)(3)), CInt(square_settings(2)(4)))
+    .Fill.Transparency = CDbl(square_settings(2)(6))
+    .Line.Visible = msoTrue
+    .Line.ForeColor.RGB = RGB(CInt(square_settings(2)(2)), CInt(square_settings(2)(3)), CInt(square_settings(2)(4)))
+End With
+With ActiveSheet.Shapes.AddTextbox(msoTextOrientationHorizontal, mover + 100, 150, 90, 40)
+    .TextFrame2.TextRange.Text = "X-over" & vbNewLine & CStr(xov_ge_umg)
+    .TextFrame2.TextRange.Font.Bold = True
+    .TextFrame2.TextRange.Font.Bold = 12
+    .Fill.Visible = msoFalse
+    .Line.Visible = msoFalse
+End With
+
+End If
+ 
+Next x
+
+End Sub
